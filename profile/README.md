@@ -1,24 +1,23 @@
 # Extensible Workflow System: Core Projects
 
-[Ewoks](https://ewoks.esrf.fr) is a project to automate data processing and experiments
-at large-scale facilities as well as making data processing reproducible and traceable.
+[Ewoks](https://ewoks.esrf.fr) is a framework for automating data processing and experiments
+at large-scale facilities in a reproducible, traceable, and portable manner.
 
-It is a _meta workflow system_ that can use different [workflow management systems](https://github.com/common-workflow-language/common-workflow-language/wiki/Existing-Workflow-systems)
-to execute the same computation graph.
+It is a _meta workflow system_ that can execute the same computation graph using different [workflow management systems](https://github.com/common-workflow-language/common-workflow-language/wiki/Existing-Workflow-systems).
 
 ## Repositories
 
 ```mermaid
 flowchart LR
-    ewoksweb["ewoksweb\n(Web UI)"]
-    ewoksserver["ewoksserver\n(REST backend)"]
+    ewoksweb["ewoksweb (Web UI)"]
+    ewoksserver["ewoksserver (REST backend)"]
 
-    ewoksjob["ewoksjob\n(Client)"]
-    ewoksjobworker["ewoksjob\n(Worker)"]
+    ewoksjob["ewoksjob (Client)"]
+    ewoksjobworker["ewoksjob (Worker)"]
 
-    ewoks["ewoks\n(API / CLI)"]
+    ewoks["ewoks (API / CLI)"]
 
-    ewokscore["ewokscore\n(Core engine & runtime)"]
+    ewokscore["ewokscore (Core engine & runtime)"]
     ewoksdask["ewoksdask"]
     ewoksppf["ewoksppf"]
     ewoksorange["ewoksorange"]
