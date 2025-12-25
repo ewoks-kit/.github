@@ -1,0 +1,26 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"  # Runs daily at 03:00 UTC
+
+jobs:
+  tests:
+    uses: ewoks-kit/.github/.github/workflows/python-tests.yml@main
+    with:
+      pytest-args: >
+        -v -ra
+        -W error
+        -W ignore::DeprecationWarning:silx.resources
+
+  lint:
+    uses: ewoks-kit/.github/.github/workflows/python-lint.yml@main
+    with:
+      enable-ruff: "true"
+
+  docs:
+    uses: ewoks-kit/.github/.github/workflows/python-docs.yml@main

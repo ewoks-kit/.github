@@ -1,0 +1,111 @@
+name: Python Publish
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  publish-testpypi:
+    name: Publish to TestPyPI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install Twine
+        run: pip install twine
+
+      - name: Publish package to TestPyPI
+        env:
+          TWINE_USERNAME: "__token__"
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+        run: |
+          if [[ -z "${{ env.TWINE_PASSWORD }}" ]]; then
+            echo "❌ TEST_PYPI_TOKEN is not set."
+            exit 1
+          fi
+          twine upload --repository testpypi dist/*
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    environment: publish-pypi   # <-- requires human approval
+    steps:
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install Twine
+        run: pip install twine
+
+      - name: Publish package to PyPI
+        env:
+          TWINE_USERNAME: "__token__"
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          if [[ -z "${{ env.TWINE_PASSWORD }}" ]]; then
+            echo "❌ PYPI_TOKEN is not set."
+            exit 1
+          fi
+          twine upload dist/*
+
+  tag-release:
+    name: Tag Release
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install package
+        run: pip install dist/*.tar.gz
+
+      - name: Get package version
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          DISTRO_NAME="${REPO_NAME//-/_}"
+          TAG_VERSION=$(python -c "from importlib.metadata import version; print(version('${DISTRO_NAME}'))")
+          echo "TAG_VERSION=${TAG_VERSION}" >> $GITHUB_ENV
+          echo "Detected version: ${TAG_VERSION}"
+
+      - name: Create Git tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          API_URL="${{ github.api_url }}/repos/${{ github.repository }}/git/refs"
+          API_VERSION="2022-11-28"
+          TAG_NAME="v${{ env.TAG_VERSION }}"
+          REF_SHA="${{ github.sha }}"
+          RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
+            -L --request POST \
+            --url "${API_URL}" \
+            --header "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
+            --header "Content-Type: application/json" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: ${API_VERSION}" \
+            --data "{
+              \"ref\": \"refs/tags/${TAG_NAME}\",
+              \"sha\": \"${REF_SHA}\"
+            }")
+          if [[ "$RESPONSE" -ne 201 ]]; then
+            echo "❌ GitHub API request failed with status code: $RESPONSE"
+            cat response.json
+            exit 1
+          fi
