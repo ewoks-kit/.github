@@ -47,6 +47,9 @@ flowchart LR
 - `ewoksppf`: engine that supports loops and conditional links.
 - `ewoksorange`: engine with a desktop graphical user interface.
 
+[Engines can be added](https://ewoks.esrf.fr/en/latest/engines.html#adding-a-new-engine-to-ewoks) can be created by anyone.
+The `ewoks` package can discover all engines installed in the same python environment.
+
 ### Workflow Management
 
 - `ewoksjob`: Job scheduling system
@@ -58,6 +61,6 @@ flowchart LR
 
 ### Development and Operations
 
-- `ewokssphinx`: Sphinx directives for _Ewoks Apps_ docs.
+- `ewokssphinx`: Sphinx directives for [Ewoks Apps](https://ewoks.esrf.fr/en/latest/tasks/index.html) documentation.
 - `ewokswhale`: Ewoks docker application.
 - `ewoksdraw`: Graphical rendering of Ewoks workflows.
