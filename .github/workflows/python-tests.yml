@@ -95,15 +95,35 @@ jobs:
           name: dist
           path: dist
 
-      - name: Install build package
+      - name: Install build package (cross-platform)
+        shell: bash
+        if: runner.os != 'Windows'
         run: |
-          if ls dist/*.whl 1> /dev/null 2>&1; then
-            PACKAGE=$(ls dist/*.whl | head -n1)
-          else
+          PACKAGE=$(ls dist/*.whl 2>/dev/null | head -n1)
+          if [ -z "$PACKAGE" ]; then
             PACKAGE=$(ls dist/*.tar.gz | head -n1)
           fi
           echo "Installing $PACKAGE[test] from $PACKAGE"
           pip install "$PACKAGE[test]"
+
+      - name: Install build package (Windows)
+        shell: pwsh
+        if: runner.os == 'Windows'
+        run: |
+          $whl = Get-ChildItem -Path dist -Filter *.whl | Select-Object -First 1
+          if ($whl) {
+              $package = $whl.FullName
+          } else {
+              $tar = Get-ChildItem -Path dist -Filter *.tar.gz | Select-Object -First 1
+              if ($tar) {
+                  $package = $tar.FullName
+              } else {
+                  Write-Error "No package found in dist/"
+                  exit 1
+              }
+          }
+          Write-Host "Installing $package[test] from $package"
+          pip install "$package[test]"
 
       - name: Get distribution name
         env:
