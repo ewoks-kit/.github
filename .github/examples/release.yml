@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/test.yml@${{ github.ref_name }}
+    uses: ./.github/workflows/ci.yml@${{ github.ref_name }}
 
   publish:
     uses: ewoks-kit/.github/.github/workflows/python-publish.yml@main
