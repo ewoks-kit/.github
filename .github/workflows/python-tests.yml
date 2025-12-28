@@ -125,13 +125,24 @@ jobs:
           Write-Host "Installing $package[test] from $package"
           pip install "$package[test]"
 
-      - name: Get distribution name
+      - name: Get distribution name (Windows)
+        if: runner.os == 'Windows'
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          $DISTRO_NAME = "${env:REPO_NAME}" -replace "-", "_"
+          echo "DISTRO_NAME=$DISTRO_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
+        shell: pwsh
+
+      - name: Get distribution name (Linux/macOS)
+        if: runner.os != 'Windows'
         env:
           REPO_NAME: ${{ github.event.repository.name }}
         run: |
           DISTRO_NAME="${REPO_NAME//-/_}"
           echo "DISTRO_NAME=${DISTRO_NAME}" >> $GITHUB_ENV
+        shell: bash
 
       - name: Run tests
         run: |
-          pytest ${{ inputs.pytest-args }} --pyargs ${DISTRO_NAME}
+          pytest ${{ inputs.pytest-args }} --pyargs $DISTRO_NAME

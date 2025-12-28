@@ -76,12 +76,27 @@ jobs:
       - name: Install package
         run: pip install dist/*.tar.gz
 
-      - name: Get package version
+      - name: Get distribution name (Windows)
+        if: runner.os == 'Windows'
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          $DISTRO_NAME = "${env:REPO_NAME}" -replace "-", "_"
+          echo "DISTRO_NAME=$DISTRO_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
+        shell: pwsh
+
+      - name: Get distribution name (Linux/macOS)
+        if: runner.os != 'Windows'
         env:
           REPO_NAME: ${{ github.event.repository.name }}
         run: |
           DISTRO_NAME="${REPO_NAME//-/_}"
-          TAG_VERSION=$(python -c "from importlib.metadata import version; print(version('${DISTRO_NAME}'))")
+          echo "DISTRO_NAME=${DISTRO_NAME}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Get package version
+        run: |
+          TAG_VERSION=$(python -c 'from importlib.metadata import version; import os; print(version(os.environ["DISTRO_NAME"]))')
           echo "TAG_VERSION=${TAG_VERSION}" >> $GITHUB_ENV
           echo "Detected version: ${TAG_VERSION}"
 
