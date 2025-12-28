@@ -95,8 +95,15 @@ jobs:
           name: dist
           path: dist
 
-      - name: Install pre-release package
-        run: pip install --pre dist/*.tar.gz[test]
+      - name: Install build package
+        run: |
+          if ls dist/*.whl 1> /dev/null 2>&1; then
+            PACKAGE=$(ls dist/*.whl | head -n1)
+          else
+            PACKAGE=$(ls dist/*.tar.gz | head -n1)
+          fi
+          echo "Installing $PACKAGE[test] from $PACKAGE"
+          pip install "$PACKAGE[test]"
 
       - name: Get distribution name
         env:
