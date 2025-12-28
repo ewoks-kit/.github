@@ -1,4 +1,4 @@
-name: Python Lint & Security
+name: Python Lint & Style & Security
 
 on:
   workflow_call:
@@ -10,6 +10,10 @@ on:
       enable-flake8:
         type: string
         default: "true"
+
+      enable-pep8-naming:
+        type: string
+        default: "false"
 
       enable-isort:
         type: string
@@ -28,8 +32,8 @@ on:
         default: "false"
 
 jobs:
-  lint:
-    name: Lint / Style / Security
+  check:
+    name: all
     runs-on: ubuntu-latest
 
     steps:
@@ -55,10 +59,13 @@ jobs:
           pip install flake8_nb
           flake8_nb
 
-      - name: flake8 + pep8-naming
+      - name: flake8
         if: inputs.enable-flake8 == 'true'
         run: |
-          pip install flake8 pep8-naming
+          pip install flake8
+          if [ "${{ inputs.enable-pep8-naming }}" = "true" ]; then
+            pip install pep8-naming
+          fi
           flake8
 
       - name: isort
