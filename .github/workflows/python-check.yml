@@ -32,8 +32,8 @@ on:
         default: "false"
 
 jobs:
-  check:
-    name: all
+  checks:
+    name: Python Lint & Style & Security
     runs-on: ubuntu-latest
 
     steps:

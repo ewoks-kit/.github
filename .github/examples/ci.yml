@@ -15,7 +15,7 @@ jobs:
         -W error
         -W ignore::DeprecationWarning:silx.resources
 
-  lint:
+  checks:
     uses: ewoks-kit/.github/.github/workflows/python-check.yml@main
     with:
       enable-ruff: "true"
