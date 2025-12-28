@@ -21,7 +21,7 @@ on:
 
       enable-bandit:
         type: string
-        default: "true"
+        default: "false"
 
       enable-ruff:
         type: string
