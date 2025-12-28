@@ -93,6 +93,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist
+          path: dist
 
       - name: Install pre-release package
         run: pip install --pre dist/*.tar.gz[test]
