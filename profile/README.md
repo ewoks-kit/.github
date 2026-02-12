@@ -47,7 +47,7 @@ flowchart LR
 - `ewoksppf`: engine that supports loops and conditional links.
 - `ewoksorange`: engine with a desktop graphical user interface.
 
-[Engines can be added](https://ewoks.esrf.fr/en/latest/engines.html#adding-a-new-engine-to-ewoks) can be created by anyone.
+[Engines can be created](https://ewoks.esrf.fr/en/latest/engines.html#adding-a-new-engine-to-ewoks) by anyone.
 The `ewoks` package can discover all engines installed in the same python environment.
 
 ### Workflow Management
