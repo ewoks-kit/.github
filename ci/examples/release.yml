@@ -13,11 +13,11 @@ jobs:
     needs: build
     uses: ewoks-kit/.github/ci/workflows/python-tests.yml@main
 
-  # Run lint/checks
+  # Run linter / checks
   checks:
     uses: ewoks-kit/.github/ci/workflows/python-check.yml@main
 
-  # Build docs
+  # Build documentation
   docs:
     needs: build
     uses: ewoks-kit/.github/ci/workflows/python-docs.yml@main
