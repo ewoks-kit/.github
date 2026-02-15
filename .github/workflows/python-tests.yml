@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ inputs.os }}
 
     steps:
-      - uses: ./.github/actions/setup-python-package@main
+      - uses: ewoks-kit/.github/.github/actions/setup-python-package@main
         with:
           python-version: ${{ inputs.python-version }}
           install-extras: "test"

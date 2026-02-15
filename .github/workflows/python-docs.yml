@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: ./.github/actions/setup-python-package@main
+      - uses: ewoks-kit/.github/.github/actions/setup-python-package@main
         with:
           python-version: ${{ inputs.python-version }}
           install-extras: "doc"
