@@ -19,6 +19,8 @@ on:
 jobs:
   test:
     runs-on: ${{ inputs.os }}
+    env:
+      JUPYTER_PLATFORM_DIRS: "1"
 
     steps:
       - uses: ewoks-kit/.github/.github/actions/setup-python-package@main
@@ -32,13 +34,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libegl1
 
+      - name: Configure headless Qt
+        if: startsWith(inputs.os, 'ubuntu')
+        run: echo "QT_QPA_PLATFORM=offscreen" >> "$GITHUB_ENV"
+
       - name: Resolve distribution name
         shell: bash
         env:
           REPO_NAME: ${{ github.event.repository.name }}
         run: |
           DISTRO_NAME="${REPO_NAME//-/_}"
-          echo "DISTRO_NAME=$DISTRO_NAME" >> $GITHUB_ENV
+          echo "DISTRO_NAME=$DISTRO_NAME" >> "$GITHUB_ENV"
 
       - name: Run pytest
-        run: pytest ${{ inputs.pytest-args }} --pyargs $DISTRO_NAME
+        run: pytest ${{ inputs.pytest-args }} --pyargs "$DISTRO_NAME"
