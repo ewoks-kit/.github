@@ -1,5 +1,5 @@
 name: "Setup Python Environment"
-description: "Checkout, setup Python, download artifact, and install package"
+description: "Download and install artifact"
 
 inputs:
   python-version:
@@ -32,21 +32,23 @@ runs:
         path: dist
 
     # Install the package
-    - name: Install package
+    - name: Install package from sdist/wheel
       shell: bash
       run: |
-        # Prefer wheel, fallback to tar.gz
+        set -e
+
         PACKAGE=$(ls dist/*.whl 2>/dev/null | head -n1)
         if [ -z "$PACKAGE" ]; then
-          PACKAGE=$(ls dist/*.tar.gz | head -n1)
+          PACKAGE=$(ls dist/*.tar.gz 2>/dev/null | head -n1)
         fi
 
-        # Fallback to source if nothing found
         if [ -z "$PACKAGE" ]; then
-          PACKAGE="."
+          echo "❌ No dist package found in dist/ folder"
+          exit 1
         fi
 
-        # Install package with extras if provided
+        echo "Installing package: $PACKAGE"
+
         if [ -n "${{ inputs.install-extras }}" ]; then
           pip install "$PACKAGE[${{ inputs.install-extras }}]"
         else

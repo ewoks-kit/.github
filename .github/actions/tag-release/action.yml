@@ -1,0 +1,62 @@
+name: Tag Release
+description: "Create a Git tag from installed sdist version"
+
+inputs:
+  python-version:
+    description: "Python version"
+    required: false
+    default: "3.12"
+  github-token:
+    description: "GitHub token with repo contents write permissions"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Setup Python
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    # Determine distribution name and version
+    - name: Get distribution name and version
+      shell: bash
+      run: |
+        python - <<'EOF'
+        import os
+        from importlib.metadata import version
+
+        # Convert repo name to Python package name
+        distro_name = os.environ['GITHUB_REPOSITORY'].split('/')[-1].replace('-', '_')
+        tag_version = version(distro_name)
+
+        with open(os.environ['GITHUB_ENV'], 'a') as f:
+            f.write(f"DISTRO_NAME={distro_name}\n")
+            f.write(f"TAG_VERSION={tag_version}\n")
+        EOF
+
+    # Create Git tag
+    - name: Create Git tag
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        API_URL="${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/refs"
+        TAG_NAME="v${TAG_VERSION}"
+        REF_SHA="${GITHUB_SHA}"
+
+        RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
+          -X POST \
+          --url "${API_URL}" \
+          --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+          --header "Content-Type: application/json" \
+          --data "{
+            \"ref\": \"refs/tags/${TAG_NAME}\",
+            \"sha\": \"${REF_SHA}\"
+          }")
+
+        if [[ "$RESPONSE" -ne 201 ]]; then
+          echo "❌ GitHub API request failed with status code: $RESPONSE"
+          cat response.json
+          exit 1
+        fi
