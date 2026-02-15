@@ -26,6 +26,12 @@ jobs:
           python-version: ${{ inputs.python-version }}
           install-extras: "test"
 
+      - name: Install Qt runtime libraries
+        if: startsWith(inputs.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1
+
       - name: Resolve distribution name
         shell: bash
         env:
