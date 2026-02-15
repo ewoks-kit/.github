@@ -3,146 +3,34 @@ name: Python Tests
 on:
   workflow_call:
     inputs:
-      python-test-versions:
-        description: "Python versions for unit tests"
+      python-version:
+        required: true
         type: string
-        default: '["3.8","3.9","3.10","3.11","3.12","3.13","3.14"]'
-
-      os-matrix:
-        description: "Operating systems for unit tests"
+      os:
+        required: true
         type: string
-        default: '["ubuntu-latest","windows-latest","macos-latest"]'
-
       pytest-args:
-        description: "Extra pytest arguments (optional)"
+        required: false
         type: string
-        default: '-v -ra -W error'
+        default: "-v -ra -W error"
 
 jobs:
-  build:
-    name: Build Distribution
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Upgrade pip and install build
-        run: python -m pip install --upgrade pip build
-
-      - name: Build source distribution
-        run: python -m build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
   test:
-    name: Test (matrix)
-    needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ${{ fromJSON(inputs.os-matrix) }}
-        python-version: ${{ fromJSON(inputs.python-test-versions) }}
-        exclude:
-          # Windows/macOS only run Python 3.12
-          - os: "windows-latest"
-            python-version: "3.8"
-          - os: "windows-latest"
-            python-version: "3.9"
-          - os: "windows-latest"
-            python-version: "3.10"
-          - os: "windows-latest"
-            python-version: "3.11"
-          - os: "windows-latest"
-            python-version: "3.13"
-          - os: "windows-latest"
-            python-version: "3.14"
-          - os: "macos-latest"
-            python-version: "3.8"
-          - os: "macos-latest"
-            python-version: "3.9"
-          - os: "macos-latest"
-            python-version: "3.10"
-          - os: "macos-latest"
-            python-version: "3.11"
-          - os: "macos-latest"
-            python-version: "3.13"
-          - os: "macos-latest"
-            python-version: "3.14"
+    runs-on: ${{ inputs.os }}
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: ewoks-kit/.github/actions/setup-python-package@main
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ inputs.python-version }}
+          install-extras: "test"
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-
-      - name: Install build package (cross-platform)
+      - name: Resolve distribution name
         shell: bash
-        if: runner.os != 'Windows'
-        run: |
-          PACKAGE=$(ls dist/*.whl 2>/dev/null | head -n1)
-          if [ -z "$PACKAGE" ]; then
-            PACKAGE=$(ls dist/*.tar.gz | head -n1)
-          fi
-          echo "Installing $PACKAGE[test] from $PACKAGE"
-          pip install "$PACKAGE[test]"
-
-      - name: Install build package (Windows)
-        shell: pwsh
-        if: runner.os == 'Windows'
-        run: |
-          $whl = Get-ChildItem -Path dist -Filter *.whl | Select-Object -First 1
-          if ($whl) {
-              $package = $whl.FullName
-          } else {
-              $tar = Get-ChildItem -Path dist -Filter *.tar.gz | Select-Object -First 1
-              if ($tar) {
-                  $package = $tar.FullName
-              } else {
-                  Write-Error "No package found in dist/"
-                  exit 1
-              }
-          }
-          Write-Host "Installing $package[test] from $package"
-          pip install "$package[test]"
-
-      - name: Get distribution name (Windows)
-        if: runner.os == 'Windows'
-        env:
-          REPO_NAME: ${{ github.event.repository.name }}
-        run: |
-          $DISTRO_NAME = "${env:REPO_NAME}" -replace "-", "_"
-          echo "DISTRO_NAME=$DISTRO_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
-        shell: pwsh
-
-      - name: Get distribution name (Linux/macOS)
-        if: runner.os != 'Windows'
         env:
           REPO_NAME: ${{ github.event.repository.name }}
         run: |
           DISTRO_NAME="${REPO_NAME//-/_}"
-          echo "DISTRO_NAME=${DISTRO_NAME}" >> $GITHUB_ENV
-        shell: bash
+          echo "DISTRO_NAME=$DISTRO_NAME" >> $GITHUB_ENV
 
-      - name: Run tests
-        run: |
-          pytest ${{ inputs.pytest-args }} --pyargs $DISTRO_NAME
+      - name: Run pytest
+        run: pytest ${{ inputs.pytest-args }} --pyargs $DISTRO_NAME

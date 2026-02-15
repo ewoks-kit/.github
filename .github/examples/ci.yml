@@ -7,18 +7,60 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Build Python package
+  build:
+    uses: ewoks-kit/.github/.github/workflows/python-build.yml@main
+
+  # Run tests
   tests:
+    needs: build
     uses: ewoks-kit/.github/.github/workflows/python-tests.yml@main
     with:
-      pytest-args: >-
-        -v -ra
-        -W error
-        -W ignore::DeprecationWarning:silx.resources
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
+      pytest-args: ${{ matrix.pytest-args || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python-version: "3.8"
+            pytest-args: >-
+              -v -ra -W error
+              -W ignore::DeprecationWarning:silx.resources
 
+          - os: ubuntu-latest
+            python-version: "3.12"
+
+          - os: windows-latest
+            python-version: "3.12"
+
+          - os: macos-latest
+            python-version: "3.12"
+
+  # Run linter / checks
   checks:
     uses: ewoks-kit/.github/.github/workflows/python-check.yml@main
     with:
       enable-ruff: "true"
 
+  # Build documentation
   docs:
+    needs: build
     uses: ewoks-kit/.github/.github/workflows/python-docs.yml@main
+    with:
+      python-doc-version: "3.12"
+
+  # Custom job
+  my-custom-job:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: ewoks-kit/.github/actions/setup-python-package@main
+        with:
+          python-version: "3.12"
+          install-extras: "dev"
+
+      - name: Run custom command
+        run: my-custom-tool src/
