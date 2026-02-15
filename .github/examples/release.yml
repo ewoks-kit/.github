@@ -6,25 +6,25 @@ on:
 jobs:
   # Build Python package
   build:
-    uses: ewoks-kit/.github/workflows/python-build.yml@main
+    uses: ewoks-kit/.github/.github/workflows/python-build.yml@main
 
   # Run tests
   tests:
     needs: build
-    uses: ewoks-kit/.github/workflows/python-tests.yml@main
+    uses: ewoks-kit/.github/.github/workflows/python-tests.yml@main
 
   # Run linter / checks
   checks:
-    uses: ewoks-kit/.github/workflows/python-check.yml@main
+    uses: ewoks-kit/.github/.github/workflows/python-check.yml@main
 
   # Build documentation
   docs:
     needs: build
-    uses: ewoks-kit/.github/workflows/python-docs.yml@main
+    uses: ewoks-kit/.github/.github/workflows/python-docs.yml@main
 
   # Publish package
   publish:
-    uses: ewoks-kit/.github/workflows/python-publish.yml@main
+    uses: ewoks-kit/.github/.github/workflows/python-publish.yml@main
     needs:
       - tests
       - checks
