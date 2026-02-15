@@ -15,12 +15,14 @@ on:
         required: false
         type: string
         default: "-v -ra -W error"
+      jupyter-platform-dirs:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   test:
     runs-on: ${{ inputs.os }}
-    env:
-      JUPYTER_PLATFORM_DIRS: "1"
 
     steps:
       - uses: ewoks-kit/.github/.github/actions/setup-python-package@main
@@ -34,9 +36,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libegl1
 
-      - name: Configure headless Qt
-        if: startsWith(inputs.os, 'ubuntu')
-        run: echo "QT_QPA_PLATFORM=offscreen" >> "$GITHUB_ENV"
+      - name: Configure test environment
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.jupyter-platform-dirs }}" ]; then
+            echo "JUPYTER_PLATFORM_DIRS=${{ inputs.jupyter-platform-dirs }}" >> "$GITHUB_ENV"
+          fi
 
       - name: Resolve distribution name
         shell: bash
