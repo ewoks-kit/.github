@@ -29,7 +29,3 @@ jobs:
       - tests
       - checks
       - docs
-    with:
-      twine-username: "__token__"
-      twine-password: ${{ secrets.PYPI_TOKEN }}
-      test-twine-password: ${{ secrets.TEST_PYPI_TOKEN }}

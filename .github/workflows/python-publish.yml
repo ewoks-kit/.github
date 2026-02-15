@@ -8,18 +8,6 @@ on:
         required: false
         type: string
         default: "3.12"
-      twine-username:
-        description: "PyPI username"
-        required: true
-        type: string
-      twine-password:
-        description: "PyPI password"
-        required: true
-        type: string
-      test-twine-password:
-        description: "TestPyPI password (optional)"
-        required: true
-        type: string
 
 jobs:
   publish-testpypi:
@@ -40,18 +28,12 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install Twine
-        run: pip install twine
+        run: python -m pip install twine
 
       - name: Publish to TestPyPI
+        run: python -m twine upload --repository testpypi dist/*
         env:
           TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: ${{ inputs.test-twine-password }}
-        run: |
-          if [[ -z "${{ env.TWINE_PASSWORD }}" ]]; then
-            echo "❌ TEST_PYPI_TOKEN is not set."
-            exit 1
-          fi
-          twine upload --repository testpypi dist/*
 
   publish-pypi:
     name: Publish to PyPI
@@ -73,18 +55,12 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install Twine
-        run: pip install twine
+        run: python -m pip install twine
 
       - name: Publish to PyPI
+        run: python -m twine upload dist/*
         env:
-          TWINE_USERNAME: ${{ inputs.twine-username }}
-          TWINE_PASSWORD: ${{ inputs.twine-password }}
-        run: |
-          if [[ -z "${{ env.TWINE_PASSWORD }}" ]]; then
-            echo "❌ PYPI_TOKEN not set."
-            exit 1
-          fi
-          twine upload dist/*
+          TWINE_USERNAME: "__token__"
 
   tag-release:
     name: Tag Release
@@ -111,20 +87,16 @@ jobs:
 
       - name: Get distribution name (Windows)
         if: runner.os == 'Windows'
-        env:
-          REPO_NAME: ${{ github.event.repository.name }}
         shell: pwsh
         run: |
-          $DISTRO_NAME = "${env:REPO_NAME}" -replace "-", "_"
+          $DISTRO_NAME = "${env:GITHUB_REPOSITORY_NAME}" -replace "-", "_"
           echo "DISTRO_NAME=$DISTRO_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
 
       - name: Get distribution name (Linux/macOS)
         if: runner.os != 'Windows'
-        env:
-          REPO_NAME: ${{ github.event.repository.name }}
         shell: bash
         run: |
-          DISTRO_NAME="${REPO_NAME//-/_}"
+          DISTRO_NAME="${GITHUB_REPOSITORY//-/_}"
           echo "DISTRO_NAME=${DISTRO_NAME}" >> $GITHUB_ENV
 
       - name: Get package version
@@ -135,18 +107,18 @@ jobs:
           echo "Detected version: ${TAG_VERSION}"
 
       - name: Create Git tag
+        shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
         run: |
-          API_URL="${{ github.api_url }}/repos/${{ github.repository }}/git/refs"
+          API_URL="${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/git/refs"
           API_VERSION="2022-11-28"
-          TAG_NAME="v${{ env.TAG_VERSION }}"
-          REF_SHA="${{ github.sha }}"
+          TAG_NAME="v${TAG_VERSION}"
+          REF_SHA="${GITHUB_SHA}"
           RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
             -L --request POST \
             --url "${API_URL}" \
-            --header "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
+            --header "Authorization: Bearer ${GITHUB_TOKEN}" \
             --header "Content-Type: application/json" \
             --header "Accept: application/vnd.github+json" \
             --header "X-GitHub-Api-Version: ${API_VERSION}" \
