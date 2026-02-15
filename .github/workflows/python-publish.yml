@@ -1,17 +1,40 @@
 name: Python Publish
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  workflow_call:
+    inputs:
+      python-version:
+        description: "Python version to use"
+        required: false
+        type: string
+        default: "3.12"
+      twine-username:
+        description: "PyPI username"
+        required: true
+        type: string
+      twine-password:
+        description: "PyPI password"
+        required: true
+        type: string
+      test-twine-password:
+        description: "TestPyPI password (optional)"
+        required: true
+        type: string
 
 jobs:
   publish-testpypi:
     name: Publish to TestPyPI
     runs-on: ubuntu-latest
     steps:
-      - name: Download test artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: dist
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
 
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
@@ -19,10 +42,10 @@ jobs:
       - name: Install Twine
         run: pip install twine
 
-      - name: Publish package to TestPyPI
+      - name: Publish to TestPyPI
         env:
           TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+          TWINE_PASSWORD: ${{ inputs.test-twine-password }}
         run: |
           if [[ -z "${{ env.TWINE_PASSWORD }}" ]]; then
             echo "❌ TEST_PYPI_TOKEN is not set."
@@ -34,12 +57,17 @@ jobs:
     name: Publish to PyPI
     needs: publish-testpypi
     runs-on: ubuntu-latest
-    environment: publish-pypi   # <-- requires human approval
+    environment: publish-pypi   # requires human approval
     steps:
-      - name: Download test artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: dist
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
 
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
@@ -47,13 +75,13 @@ jobs:
       - name: Install Twine
         run: pip install twine
 
-      - name: Publish package to PyPI
+      - name: Publish to PyPI
         env:
-          TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          TWINE_USERNAME: ${{ inputs.twine-username }}
+          TWINE_PASSWORD: ${{ inputs.twine-password }}
         run: |
           if [[ -z "${{ env.TWINE_PASSWORD }}" ]]; then
-            echo "❌ PYPI_TOKEN is not set."
+            echo "❌ PYPI_TOKEN not set."
             exit 1
           fi
           twine upload dist/*
@@ -65,10 +93,15 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download test artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: dist
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
 
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
@@ -80,21 +113,22 @@ jobs:
         if: runner.os == 'Windows'
         env:
           REPO_NAME: ${{ github.event.repository.name }}
+        shell: pwsh
         run: |
           $DISTRO_NAME = "${env:REPO_NAME}" -replace "-", "_"
           echo "DISTRO_NAME=$DISTRO_NAME" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
-        shell: pwsh
 
       - name: Get distribution name (Linux/macOS)
         if: runner.os != 'Windows'
         env:
           REPO_NAME: ${{ github.event.repository.name }}
+        shell: bash
         run: |
           DISTRO_NAME="${REPO_NAME//-/_}"
           echo "DISTRO_NAME=${DISTRO_NAME}" >> $GITHUB_ENV
-        shell: bash
 
       - name: Get package version
+        shell: bash
         run: |
           TAG_VERSION=$(python -c 'from importlib.metadata import version; import os; print(version(os.environ["DISTRO_NAME"]))')
           echo "TAG_VERSION=${TAG_VERSION}" >> $GITHUB_ENV
@@ -103,6 +137,7 @@ jobs:
       - name: Create Git tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
           API_URL="${{ github.api_url }}/repos/${{ github.repository }}/git/refs"
           API_VERSION="2022-11-28"
