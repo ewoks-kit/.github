@@ -9,12 +9,12 @@ on:
 jobs:
   # Build Python package
   build:
-    uses: ewoks-kit/.github/.github/workflows/python-build.yml@main
+    uses: ewoks-kit/.github/ci/workflows/python-build.yml@main
 
   # Run tests
   tests:
     needs: build
-    uses: ewoks-kit/.github/.github/workflows/python-tests.yml@main
+    uses: ewoks-kit/.github/ci/workflows/python-tests.yml@main
     # with:
     #   os: ${{ matrix.os }}
     #   python-version: ${{ matrix.python-version }}
@@ -40,12 +40,12 @@ jobs:
 
   # Run linter / checks
   checks:
-    uses: ewoks-kit/.github/.github/workflows/python-check.yml@main
+    uses: ewoks-kit/.github/ci/workflows/python-check.yml@main
 
   # Build documentation
   docs:
     needs: build
-    uses: ewoks-kit/.github/.github/workflows/python-docs.yml@main
+    uses: ewoks-kit/.github/ci/workflows/python-docs.yml@main
 
   # Run scripts
   scripts:
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: ewoks-kit/.github/actions/setup-python-package@main
+      - uses: ewoks-kit/.github/ci/actions/setup-python-package@main
 
       - name: Run all scripts
         shell: bash
