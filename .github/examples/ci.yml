@@ -47,13 +47,18 @@ jobs:
     needs: build
     uses: ewoks-kit/.github/.github/workflows/python-docs.yml@main
 
-  # Custom job
-  my-custom-job:
+  # Run scripts
+  scripts:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
       - uses: ewoks-kit/.github/actions/setup-python-package@main
 
-      - name: Run custom command
-        run: my-custom-tool src/
+      - name: Run all scripts
+        shell: bash
+        run: |
+          for filename in scripts/*; do
+            echo "Running $filename"
+            python "$filename"
+          done
