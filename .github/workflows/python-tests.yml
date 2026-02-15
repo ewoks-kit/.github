@@ -4,11 +4,13 @@ on:
   workflow_call:
     inputs:
       python-version:
-        required: true
+        required: false
         type: string
+        default: "3.12"
       os:
-        required: true
+        required: false
         type: string
+        default: "ubuntu-latest"
       pytest-args:
         required: false
         type: string

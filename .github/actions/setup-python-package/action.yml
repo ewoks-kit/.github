@@ -4,7 +4,8 @@ description: "Checkout, setup Python, download artifact, and install package"
 inputs:
   python-version:
     description: "Python version"
-    required: true
+    required: false
+    default: "3.12"
   install-extras:
     description: "Extras to install"
     required: false

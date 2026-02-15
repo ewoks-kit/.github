@@ -3,7 +3,7 @@ name: Python Documentation
 on:
   workflow_call:
     inputs:
-      python-doc-version:
+      python-version:
         description: "Python version for documentation build"
         type: string
         default: "3.12"
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: ewoks-kit/.github/actions/setup-python-package@main
         with:
-          python-version: ${{ inputs.python-doc-version }}
+          python-version: ${{ inputs.python-version }}
           install-extras: "doc"
 
       - name: Build documentation

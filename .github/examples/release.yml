@@ -12,22 +12,15 @@ jobs:
   tests:
     needs: build
     uses: ewoks-kit/.github/.github/workflows/python-tests.yml@main
-    with:
-      os: ubuntu-latest
-      python-version: "3.12"
 
   # Run lint/checks
   checks:
     uses: ewoks-kit/.github/.github/workflows/python-check.yml@main
-    with:
-      enable-ruff: "true"
 
   # Build docs
   docs:
     needs: build
     uses: ewoks-kit/.github/.github/workflows/python-docs.yml@main
-    with:
-      python-doc-version: "3.12"
 
   # Publish package
   publish:
