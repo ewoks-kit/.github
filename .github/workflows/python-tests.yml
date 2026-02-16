@@ -18,7 +18,23 @@ on:
       jupyter-platform-dirs:
         required: false
         type: string
+        default: "1"
+      qt-qpa-platform:
+        required: false
+        type: string
+        default: "offline"
+      qt-api:
+        required: false
+        type: string
         default: ""
+      qt-binding:
+        required: false
+        type: string
+        default: ""
+      display:
+        required: false
+        type: string
+        default: "0"
 
 jobs:
   test:
@@ -41,6 +57,18 @@ jobs:
         run: |
           if [ -n "${{ inputs.jupyter-platform-dirs }}" ]; then
             echo "JUPYTER_PLATFORM_DIRS=${{ inputs.jupyter-platform-dirs }}" >> "$GITHUB_ENV"
+          fi
+          if [ -n "${{ inputs.qt-qpa-platform }}" ]; then
+            echo "QT_QPA_PLATFORM=${{ inputs.qt-qpa-platform }}" >> "$GITHUB_ENV"
+          fi
+          if [ -n "${{ inputs.qt-api }}" ]; then
+            echo "QT_API=${{ inputs.qt-api }}" >> "$GITHUB_ENV"
+          fi
+          if [ -n "${{ inputs.display }}" ]; then
+            echo "DISPLAY=${{ inputs.display }}" >> "$GITHUB_ENV"
+          fi
+          if [ -n "${{ inputs.qt-binding }}" ]; then
+            echo "QT_BINDING=${{ inputs.qt-binding }}" >> "$GITHUB_ENV"
           fi
 
       - name: Resolve distribution name
