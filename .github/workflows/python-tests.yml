@@ -47,7 +47,7 @@ jobs:
           install-extras: "test"
 
       - name: Install Qt runtime libraries
-        if: startsWith(inputs.os, 'ubuntu')
+        if: startsWith(inputs.os, 'ubuntu') && (inputs.qt-api != '' || inputs.qt-binding != '')
         run: |
           sudo apt-get update
           sudo apt-get install -y libegl1
