@@ -22,7 +22,7 @@ on:
       qt-qpa-platform:
         required: false
         type: string
-        default: "offline"
+        default: "offscreen"
       qt-api:
         required: false
         type: string
