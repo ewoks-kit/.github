@@ -24,7 +24,7 @@ on:
         type: string
         default: ""
     secrets:
-      codecov-token:
+      codecov_token:
         required: false
 
 jobs:
@@ -61,19 +61,10 @@ jobs:
           name: coverage-xml
           path: coverage.xml
 
-      - name: Upload coverage to Codecov (token)
-        if: ${{ secrets.codecov-token != '' }}
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
           flags: ${{ inputs.codecov-flags }}
-          token: ${{ secrets.codecov-token }}
-          fail_ci_if_error: false
-
-      - name: Upload coverage to Codecov (tokenless)
-        if: ${{ secrets.codecov-token == '' }}
-        uses: codecov/codecov-action@v5
-        with:
-          files: coverage.xml
-          flags: ${{ inputs.codecov-flags }}
+          token: ${{ secrets.codecov_token }}
           fail_ci_if_error: false

@@ -44,7 +44,8 @@ jobs:
   coverage:
     needs: build
     uses: ewoks-kit/.github/.github/workflows/python-coverage.yml@main
-    secrets: inherit
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
   # Run linter / checks
   checks:
