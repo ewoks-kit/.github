@@ -40,6 +40,12 @@ jobs:
     #       - os: macos-latest
     #         python-version: "3.12"
 
+  # Run coverage
+  coverage:
+    needs: build
+    uses: ewoks-kit/.github/.github/workflows/python-coverage.yml@main
+    secrets: inherit
+
   # Run linter / checks
   checks:
     uses: ewoks-kit/.github/.github/workflows/python-check.yml@main

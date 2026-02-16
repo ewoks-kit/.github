@@ -1,0 +1,79 @@
+name: Python Coverage
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.12"
+      os:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+      install-extras:
+        required: false
+        type: string
+        default: "test"
+      pytest-args:
+        required: false
+        type: string
+        default: "-v -ra -W error"
+      codecov-flags:
+        required: false
+        type: string
+        default: ""
+    secrets:
+      codecov-token:
+        required: false
+
+jobs:
+  coverage:
+    runs-on: ${{ inputs.os }}
+
+    steps:
+      - uses: ewoks-kit/.github/.github/actions/setup-python-package@main
+        with:
+          python-version: ${{ inputs.python-version }}
+          install-extras: ${{ inputs.install-extras }}
+
+      - name: Install coverage tooling
+        run: pip install pytest-cov "coverage[toml]"
+
+      - name: Resolve distribution name
+        shell: bash
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          DISTRO_NAME="${REPO_NAME//-/_}"
+          echo "DISTRO_NAME=$DISTRO_NAME" >> "$GITHUB_ENV"
+
+      - name: Run pytest with coverage
+        run: |
+          pytest ${{ inputs.pytest-args }} \
+            --cov="$DISTRO_NAME" \
+            --cov-report=term \
+            --cov-report=xml \
+            --pyargs "$DISTRO_NAME"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+      - name: Upload coverage to Codecov (token)
+        if: ${{ secrets.codecov-token != '' }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          flags: ${{ inputs.codecov-flags }}
+          token: ${{ secrets.codecov-token }}
+          fail_ci_if_error: false
+
+      - name: Upload coverage to Codecov (tokenless)
+        if: ${{ secrets.codecov-token == '' }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          flags: ${{ inputs.codecov-flags }}
+          fail_ci_if_error: false
