@@ -15,6 +15,14 @@ on:
         required: false
         type: string
         default: "-v -ra -W error"
+      enable-coverage:
+        required: false
+        type: string
+        default: "false"
+      codecov-flags:
+        required: false
+        type: string
+        default: "unit"
       jupyter-platform-dirs:
         required: false
         type: string
@@ -35,6 +43,9 @@ on:
         required: false
         type: string
         default: "0"
+    secrets:
+      codecov_token:
+        required: false
 
 jobs:
   test:
@@ -79,5 +90,35 @@ jobs:
           DISTRO_NAME="${REPO_NAME//-/_}"
           echo "DISTRO_NAME=$DISTRO_NAME" >> "$GITHUB_ENV"
 
+      - name: Install coverage tooling
+        if: inputs.enable-coverage == 'true'
+        run: pip install pytest-cov "coverage[toml]"
+
       - name: Run pytest
+        if: inputs.enable-coverage != 'true'
         run: pytest ${{ inputs.pytest-args }} --pyargs "$DISTRO_NAME"
+
+      - name: Run pytest with coverage
+        if: inputs.enable-coverage == 'true'
+        run: |
+          pytest ${{ inputs.pytest-args }} \
+            --cov="$DISTRO_NAME" \
+            --cov-report=term \
+            --cov-report=xml \
+            --pyargs "$DISTRO_NAME"
+
+      - name: Upload coverage artifact
+        if: inputs.enable-coverage == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+      - name: Upload coverage to Codecov
+        if: inputs.enable-coverage == 'true'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          flags: ${{ inputs.codecov-flags }}
+          token: ${{ secrets.codecov_token }}
+          fail_ci_if_error: false
