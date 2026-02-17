@@ -22,7 +22,7 @@ jobs:
     # with:
     #   os: ${{ matrix.os }}
     #   python-version: ${{ matrix.python-version }}
-    #   pytest-args: ${{ matrix.pytest-args || '' }}
+    #   pytest-args: ${{ matrix.pytest-args }}
     #   enable-coverage: ${{ matrix.enable-coverage }}
     #   qt-api: PyQt6
     #   codecov-flags: "unit" # "unit" is default, can be "integration", "frontend", "backend"
