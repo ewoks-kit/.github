@@ -17,6 +17,8 @@ jobs:
   tests:
     needs: build
     uses: ewoks-kit/.github/.github/workflows/python-tests.yml@main
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
     # with:
     #   os: ${{ matrix.os }}
     #   python-version: ${{ matrix.python-version }}
@@ -39,13 +41,6 @@ jobs:
     #
     #       - os: macos-latest
     #         python-version: "3.12"
-
-  # Run coverage
-  coverage:
-    needs: build
-    uses: ewoks-kit/.github/.github/workflows/python-coverage.yml@main
-    secrets:
-      codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
   # Run linter / checks
   checks:
