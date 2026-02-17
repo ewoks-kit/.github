@@ -23,6 +23,7 @@ jobs:
     #   os: ${{ matrix.os }}
     #   python-version: ${{ matrix.python-version }}
     #   pytest-args: ${{ matrix.pytest-args || '' }}
+    #   enable-coverage: "true"
     # strategy:
     #   fail-fast: false
     #   matrix:
