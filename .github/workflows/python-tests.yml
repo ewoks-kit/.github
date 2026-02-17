@@ -22,7 +22,7 @@ on:
       codecov-flags:
         required: false
         type: string
-        default: ""
+        default: "unit"
       jupyter-platform-dirs:
         required: false
         type: string
