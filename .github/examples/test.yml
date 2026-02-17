@@ -23,25 +23,30 @@ jobs:
     #   os: ${{ matrix.os }}
     #   python-version: ${{ matrix.python-version }}
     #   pytest-args: ${{ matrix.pytest-args || '' }}
-    #   enable-coverage: "true"
+    #   enable-coverage: ${{ matrix.enable-coverage }}
+    #   qt-api: PyQt6
     # strategy:
     #   fail-fast: false
     #   matrix:
     #     include:
     #       - os: ubuntu-latest
     #         python-version: "3.8"
+    #         enable-coverage: "false"
     #         pytest-args: >-
     #           -v -ra -W error
     #           -W ignore::DeprecationWarning:silx.resources
     #
     #       - os: ubuntu-latest
     #         python-version: "3.12"
+    #         enable-coverage: "true"
     #
     #       - os: windows-latest
     #         python-version: "3.12"
+    #         enable-coverage: "false"
     #
     #       - os: macos-latest
     #         python-version: "3.12"
+    #         enable-coverage: "false"
 
   # Run linter / checks
   checks:
