@@ -90,6 +90,10 @@ jobs:
           DISTRO_NAME="${REPO_NAME//-/_}"
           echo "DISTRO_NAME=$DISTRO_NAME" >> "$GITHUB_ENV"
 
+      - name: Install requested Qt API package
+        if: inputs.qt-api != ''
+        run: pip install "${{ inputs.qt-api }}"
+
       - name: Install coverage tooling
         if: inputs.enable-coverage == 'true'
         run: pip install pytest-cov "coverage[toml]"
