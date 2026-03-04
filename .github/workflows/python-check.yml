@@ -79,6 +79,7 @@ jobs:
         run: |
           pip install ruff
           ruff check .
+          ruff format --check .
 
       - name: bandit
         if: inputs.enable-bandit == 'true'
