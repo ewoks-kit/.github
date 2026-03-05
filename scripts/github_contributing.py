@@ -56,5 +56,5 @@ if __name__ == "__main__":
         + RELEASING
     )
 
-    (thisdir.parent / "CONTRIBUTING.md").write_text(default_contributing)
-    (thisdir.parent / "CONTRIBUTING_ruff.md").write_text(ruff_contributing)
+    (thisdir.parent / "shared" / "CONTRIBUTING.md").write_text(default_contributing)
+    (thisdir.parent / "shared" / "CONTRIBUTING_ruff.md").write_text(ruff_contributing)

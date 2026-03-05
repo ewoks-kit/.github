@@ -3,18 +3,18 @@
 Requirements are listed in `pyproject.toml` and can be installed with
 
 ```bash
-pip install .[dev]
+pip install [--user] .[dev]
 ```
 
 ## Formatting
 
 All code must be formatted with [black](https://black.readthedocs.io/en/stable) latest version or the CI will break. Editor integration such as [Black VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) or [Git hooks](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks) can be set-up for automatic formatting.
 
-The configuration can be found in `pyproject.toml`. 
+The configuration can be found in `pyproject.toml`.
 
 ## Linting
 
-[flake8](https://flake8.pycqa.org/en/latest/index.html) is used to lint the code. 
+[flake8](https://flake8.pycqa.org/en/latest/index.html) is used to lint the code.
 
 The configuration is located in `.flake8`. It is written specifically to be compatible with black so that changes should not be needed. If needed, linting errors can be [ignored inline by adding comments](https://flake8.pycqa.org/en/latest/user/violations.html#in-line-ignoring-errors) (e.g.`# noqa: E123`).
 
@@ -22,7 +22,7 @@ The configuration is located in `.flake8`. It is written specifically to be comp
 
 Order of imports is enforced by [isort](https://pycqa.github.io/isort/). Same as for black, editor extensions such as [isort VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.isort) can be used to sort imports automatically when saving.
 
-The configuration in `pyproject.toml` is made to be [compatible with black](https://pycqa.github.io/isort/docs/configuration/black_compatibility.html). 
+The configuration in `pyproject.toml` is made to be [compatible with black](https://pycqa.github.io/isort/docs/configuration/black_compatibility.html).
 
 ## Testing
 
@@ -88,9 +88,9 @@ rm -rf doc/_generated/; sphinx-build doc build/sphinx/html -E -a
 
    - Deploy through CI jobs (recommended)
 
-      Launch the `Release` pipeline can manually confirm the steps for 
-      deployment on [pypi](https://pypi.org) and [testpypi](https://test.pypi.org)
-      When the `pypi` job succeeds a git tag for the version will be added to the repository.
+      Once the tests have passed on `main`, CI jobs for deployment on [pypi](https://pypi.org) and [testpypi](https://test.pypi.org)
+      will be available in the CI pipeline page. Launching these jobs manually will trigger the deployment on the corresponding
+      python package index. In case of the `pypi` job a git tag for the version will be added to the repository.
 
    - Deploy manually from the terminal with `build` and `twine`
 
@@ -109,3 +109,5 @@ rm -rf doc/_generated/; sphinx-build doc build/sphinx/html -E -a
    git tag v1.2.3
    git push && git push --tags
    ```
+
+   Release notes can be added in the `Tags` page of the gitlab repository.
