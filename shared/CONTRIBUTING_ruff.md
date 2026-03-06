@@ -8,21 +8,30 @@ pip install [--user] .[dev]
 
 ## Formatting
 
-All code must be formatted with [black](https://black.readthedocs.io/en/stable) latest version or the CI will break. Editor integration such as [Black VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) or [Git hooks](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks) can be set-up for automatic formatting.
+[ruff](https://docs.astral.sh/ruff/) is used to format the code. It gives formatting equivalent to [black](https://docs.astral.sh/ruff/faq/#how-does-ruffs-formatter-compare-to-black).
 
-The configuration can be found in `pyproject.toml`.
+Editor integration such as [Ruff VSCode extension](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) or [Git hooks](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks) can be set-up for automatic formatting.
+
+The configuration can be found in `pyproject.toml` under `[tool.ruff.format]` sections.
 
 ## Linting
 
-[flake8](https://flake8.pycqa.org/en/latest/index.html) is used to lint the code.
+[ruff](https://docs.astral.sh/ruff/) is used to lint the code. The linting is equivalent to [flake8](https://docs.astral.sh/ruff/faq/#how-does-ruffs-linter-compare-to-flake8) linting.
 
-The configuration is located in `.flake8`. It is written specifically to be compatible with black so that changes should not be needed. If needed, linting errors can be [ignored inline by adding comments](https://flake8.pycqa.org/en/latest/user/violations.html#in-line-ignoring-errors) (e.g.`# noqa: E123`).
+[Configuration](https://docs.astral.sh/ruff/configuration/) can be changed in `pyproject.toml` but the default configuration is compatible with black so that changes should not be needed. If needed, linting errors can be [ignored inline by adding comments](https://docs.astral.sh/ruff/linter/#line-level) (e.g.`# noqa: E123`).
 
 ## Import order
 
-Order of imports is enforced by [isort](https://pycqa.github.io/isort/). Same as for black, editor extensions such as [isort VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.isort) can be used to sort imports automatically when saving.
+Order of imports is enforced by [ruff](https://docs.astral.sh/ruff/) **linter**. The [imports can be automatically sorted](https://docs.astral.sh/ruff/formatter/#sorting-imports) by running:
 
-The configuration in `pyproject.toml` is made to be [compatible with black](https://pycqa.github.io/isort/docs/configuration/black_compatibility.html).
+```bash
+ruff check --select I --fix
+ruff format
+```
+
+As for formatting, we advise to use the [Ruff VSCode extension](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) or [a Git hook](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks) to sort imports automatically when saving.
+
+Configuration can be found in `pyproject.toml` under `[tool.ruff.lint.isort]` sections.
 
 ## Testing
 
