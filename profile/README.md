@@ -37,30 +37,30 @@ flowchart LR
     ewoks --> ewoksorange
 ```
 
-- `ewoks`: main python API and CLI for workflow execution.
-- `ewokscore`: runtime graph and task utilities used by [Ewoks Engines](https://ewoks.esrf.fr/en/latest/engines.html) and [Ewoks Apps](https://ewoks.esrf.fr/en/latest/tasks/index.html).
+- [`ewoks`](https://github.com/ewoks-kit/ewoks): main python API and CLI for workflow execution.
+- [`ewokscore`](https://github.com/ewoks-kit/ewokscore): runtime graph and task utilities used by [Ewoks Engines](https://ewoks.esrf.fr/en/latest/engines.html) and [Ewoks Apps](https://ewoks.esrf.fr/en/latest/tasks/index.html).
 
 ### Workflow Engines
 
-- `ewokscore`: basic engine for sequential execution.
-- `ewoksdask`: engine for distributed execution.
-- `ewoksppf`: engine that supports loops and conditional links.
-- `ewoksorange`: engine with a desktop graphical user interface.
+- [`ewokscore`](https://github.com/ewoks-kit/ewokscore): basic engine for sequential execution.
+- [`ewoksdask`](https://github.com/ewoks-kit/ewoksdask): engine for distributed execution.
+- [`ewoksppf`](https://github.com/ewoks-kit/ewoksppf): engine that supports loops and conditional links.
+- [`ewoksorange`](https://github.com/ewoks-kit/ewoksorange): engine with a desktop graphical user interface.
 
 [Engines can be created](https://ewoks.esrf.fr/en/latest/engines.html#adding-a-new-engine-to-ewoks) by anyone.
 The `ewoks` package can discover all engines installed in the same python environment.
 
 ### Workflow Management
 
-- `ewoksjob`: Job scheduling system
+- [`ewoksjob`](https://github.com/ewoks-kit/ewoksjob): Job scheduling system
   - _client_: submit workflows (no `ewoks` installation required)
   - _worker_: execute workflows (`ewoks` installed)
-- `ewoksutils`: Shared utilities used by ewoks, ewokscore, and ewoksjob on both client and worker sides.
-- `ewoksweb`: web frontend for workflow creation and execution.
-- `ewoksserver`: REST server for workflow creation and execution.
+- [`ewoksutils`](https://github.com/ewoks-kit/ewoksutils): Shared utilities used by ewoks, ewokscore, and ewoksjob on both client and worker sides.
+- [`ewoksweb`](https://github.com/ewoks-kit/ewoksweb): web frontend for workflow creation and execution.
+- [`ewoksserver`](https://github.com/ewoks-kit/ewoksserver): REST server for workflow creation and execution.
 
 ### Development and Operations
 
-- `ewokssphinx`: Sphinx directives for [Ewoks Apps](https://ewoks.esrf.fr/en/latest/tasks/index.html) documentation.
-- `ewokswhale`: Ewoks docker application.
-- `ewoksdraw`: Graphical rendering of Ewoks workflows.
+- [`ewokssphinx`](https://github.com/ewoks-kit/ewokssphinx): Sphinx directives for [Ewoks Apps](https://ewoks.esrf.fr/en/latest/tasks/index.html) documentation.
+- [`ewokswhale`](https://github.com/ewoks-kit/ewokswhale): Ewoks docker compose application.
+- [`ewoksdraw`](https://github.com/ewoks-kit/ewoksdraw): Graphical rendering of Ewoks workflows.
