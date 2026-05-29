@@ -31,6 +31,10 @@ on:
         type: string
         default: "false"
 
+      enable-mypy:
+        type: string
+        default: "false"
+
 jobs:
   checks:
     name: Python Lint & Style & Security
@@ -86,3 +90,9 @@ jobs:
         run: |
           pip install "bandit[toml]"
           bandit -c pyproject.toml -r .
+
+      - name: mypy
+        if: inputs.enable-mypy == 'true'
+        run: |
+          pip install mypy
+          mypy .
