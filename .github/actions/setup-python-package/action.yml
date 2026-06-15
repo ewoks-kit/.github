@@ -50,7 +50,7 @@ runs:
         echo "Installing package: $PACKAGE"
 
         if [ -n "${{ inputs.install-extras }}" ]; then
-          pip install "$PACKAGE[${{ inputs.install-extras }}]"
+          pip install --pre "$PACKAGE[${{ inputs.install-extras }}]"
         else
-          pip install "$PACKAGE"
+          pip install --pre "$PACKAGE"
         fi
