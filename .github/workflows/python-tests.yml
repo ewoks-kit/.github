@@ -35,10 +35,6 @@ on:
         required: false
         type: string
         default: ""
-      qt-binding:
-        required: false
-        type: string
-        default: ""
       display:
         required: false
         type: string
@@ -58,7 +54,7 @@ jobs:
           install-extras: "test"
 
       - name: Install Qt runtime libraries
-        if: startsWith(inputs.os, 'ubuntu') && (inputs.qt-api != '' || inputs.qt-binding != '')
+        if: startsWith(inputs.os, 'ubuntu') && (inputs.qt-api != '')
         run: |
           sudo apt-get update
           sudo apt-get install -y libegl1
@@ -77,9 +73,6 @@ jobs:
           fi
           if [ -n "${{ inputs.display }}" ]; then
             echo "DISPLAY=${{ inputs.display }}" >> "$GITHUB_ENV"
-          fi
-          if [ -n "${{ inputs.qt-binding }}" ]; then
-            echo "QT_BINDING=${{ inputs.qt-binding }}" >> "$GITHUB_ENV"
           fi
 
       - name: Resolve distribution name
