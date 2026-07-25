@@ -55,12 +55,14 @@ jobs:
         if: inputs.enable-black == 'true'
         run: |
           pip install "black>=25"
+          black --version
           black --check .
 
       - name: flake8_nb
         if: inputs.enable-flake8-nb == 'true'
         run: |
           pip install flake8_nb
+          flake8_nb --version
           flake8_nb
 
       - name: flake8
@@ -70,18 +72,21 @@ jobs:
           if [ "${{ inputs.enable-pep8-naming }}" = "true" ]; then
             pip install pep8-naming
           fi
+          flake8 --version
           flake8
 
       - name: isort
         if: inputs.enable-isort == 'true'
         run: |
           pip install isort
+          isort --version
           isort --check-only .
 
       - name: ruff
         if: inputs.enable-ruff == 'true'
         run: |
           pip install ruff
+          ruff --version
           ruff check .
           ruff format --check .
 
@@ -89,6 +94,7 @@ jobs:
         if: inputs.enable-bandit == 'true'
         run: |
           pip install "bandit[toml]"
+          bandit --version
           bandit -c pyproject.toml -r .
 
       - name: mypy
