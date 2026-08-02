@@ -39,6 +39,10 @@ on:
         required: false
         type: string
         default: "0"
+      install-extras:
+        required: false
+        type: string
+        default: "test"
     secrets:
       codecov_token:
         required: false
@@ -51,7 +55,7 @@ jobs:
       - uses: ewoks-kit/.github/.github/actions/setup-python-package@main
         with:
           python-version: ${{ inputs.python-version }}
-          install-extras: "test"
+          install-extras: ${{ inputs.install-extras }}
 
       - name: Install Qt runtime libraries
         if: startsWith(inputs.os, 'ubuntu') && (inputs.qt-api != '')
