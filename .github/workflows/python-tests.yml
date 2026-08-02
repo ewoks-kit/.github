@@ -43,6 +43,14 @@ on:
         required: false
         type: string
         default: "test"
+      pre-install:
+        required: false
+        type: string
+        default: ""
+      post-install:
+        required: false
+        type: string
+        default: ""
     secrets:
       codecov_token:
         required: false
@@ -56,6 +64,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
           install-extras: ${{ inputs.install-extras }}
+          pre-install: ${{ inputs.pre-install }}
 
       - name: Install Qt runtime libraries
         if: startsWith(inputs.os, 'ubuntu') && (inputs.qt-api != '')
@@ -94,6 +103,11 @@ jobs:
       - name: Install coverage tooling
         if: inputs.enable-coverage == 'true'
         run: pip install pytest-cov "coverage[toml]"
+
+      - name: Run post-install commands
+        if: inputs.post-install != ''
+        shell: bash
+        run: ${{ inputs.post-install }}
 
       - name: Run pytest
         if: inputs.enable-coverage != 'true'
