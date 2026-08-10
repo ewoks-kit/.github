@@ -53,11 +53,13 @@ runs:
       run: |
         set -e
         if [ "$RUNNER_OS" == "Windows" ]; then
+          # 'condabin' only has scripts on Windows: 'conda' must come from 'Scripts'
           echo "$CONDA/Scripts" >> "$GITHUB_PATH"
         else
           # Conda writes its package cache inside the pre-installed distribution
           sudo chown -R "$USER" "$CONDA"
-          echo "$CONDA/bin" >> "$GITHUB_PATH"
+          # 'condabin' only provides conda while 'bin' would shadow the python under test
+          echo "$CONDA/condabin" >> "$GITHUB_PATH"
         fi
 
     - name: Check package managers
