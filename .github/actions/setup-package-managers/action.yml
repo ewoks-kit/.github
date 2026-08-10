@@ -10,21 +10,30 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # '--python python' resolves a version that supports the python under test
     - name: Install uv
       if: contains(inputs.package-managers, 'uv')
       shell: bash
-      run: pipx install --python python uv
+      env:
+        UV_NO_MODIFY_PATH: "1"
+      run: |
+        set -e
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          export UV_INSTALL_DIR="$USERPROFILE\\.local\\uv"
+          powershell -ExecutionPolicy ByPass -c "irm -useb https://astral.sh/uv/install.ps1 | iex"
+        else
+          export UV_INSTALL_DIR="$HOME/.local/uv"
+          curl -fsSL https://astral.sh/uv/install.sh | sh
+        fi
+        echo "$UV_INSTALL_DIR" >> "$GITHUB_PATH"
 
+    # '--python python' resolves a version that supports the python under test
     - name: Install poetry
       if: contains(inputs.package-managers, 'poetry')
       shell: bash
-      run: pipx install --python python poetry
-
-    - name: Add pipx executables to PATH
-      if: contains(inputs.package-managers, 'uv') || contains(inputs.package-managers, 'poetry')
-      shell: bash
-      run: pipx environment --value PIPX_BIN_DIR >> "$GITHUB_PATH"
+      run: |
+        set -e
+        pipx install --python python poetry
+        pipx environment --value PIPX_BIN_DIR >> "$GITHUB_PATH"
 
     - name: Install pixi
       if: contains(inputs.package-managers, 'pixi')
