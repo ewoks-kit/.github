@@ -1,0 +1,60 @@
+name: "Setup Python Package Managers"
+description: "Make python package managers available on PATH"
+
+inputs:
+  package-managers:
+    description: "Space-separated package managers: uv, poetry, pixi and/or conda"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    # '--python python' resolves a version that supports the python under test
+    - name: Install uv
+      if: contains(inputs.package-managers, 'uv')
+      shell: bash
+      run: pipx install --python python uv
+
+    - name: Install poetry
+      if: contains(inputs.package-managers, 'poetry')
+      shell: bash
+      run: pipx install --python python poetry
+
+    - name: Add pipx executables to PATH
+      if: contains(inputs.package-managers, 'uv') || contains(inputs.package-managers, 'poetry')
+      shell: bash
+      run: pipx environment --value PIPX_BIN_DIR >> "$GITHUB_PATH"
+
+    - name: Install pixi
+      if: contains(inputs.package-managers, 'pixi')
+      shell: bash
+      run: |
+        set -e
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          powershell -ExecutionPolicy ByPass -c "irm -useb https://pixi.sh/install.ps1 | iex"
+        else
+          curl -fsSL https://pixi.sh/install.sh | bash
+        fi
+        echo "$HOME/.pixi/bin" >> "$GITHUB_PATH"
+
+    - name: Enable conda
+      if: contains(inputs.package-managers, 'conda')
+      shell: bash
+      run: |
+        set -e
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          echo "$CONDA/Scripts" >> "$GITHUB_PATH"
+        else
+          # Conda writes its package cache inside the pre-installed distribution
+          sudo chown -R "$USER" "$CONDA"
+          echo "$CONDA/bin" >> "$GITHUB_PATH"
+        fi
+
+    - name: Check package managers
+      if: inputs.package-managers != ''
+      shell: bash
+      run: |
+        for manager in ${{ inputs.package-managers }}; do
+          echo "$manager: $(command -v "$manager" || echo 'NOT FOUND')"
+        done

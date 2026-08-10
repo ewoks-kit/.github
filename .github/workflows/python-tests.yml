@@ -51,6 +51,10 @@ on:
         required: false
         type: string
         default: ""
+      package-managers:
+        required: false
+        type: string
+        default: ""
     secrets:
       codecov_token:
         required: false
@@ -65,6 +69,10 @@ jobs:
           python-version: ${{ inputs.python-version }}
           install-extras: ${{ inputs.install-extras }}
           pre-install: ${{ inputs.pre-install }}
+
+      - uses: ewoks-kit/.github/.github/actions/setup-package-managers@main
+        with:
+          package-managers: ${{ inputs.package-managers }}
 
       - name: Install Qt runtime libraries
         if: startsWith(inputs.os, 'ubuntu') && (inputs.qt-api != '')
