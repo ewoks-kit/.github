@@ -135,6 +135,8 @@ In short:
 
 3. Check that you own the copyright of the submitted code, in accordance with the MIT license of the project.
 
-4. Use of AI is forbidden for issues tagged Difficulty: Easy. The value of solving those is for a human to learn by doing, and is wasted on an AI.
+4. Use of AI is forbidden for issues tagged _good first issue_. The value of solving those is for a human to learn by doing, and is wasted on an AI.
 
 5. Fully autonomous pull request submission by agent AIs is forbidden in accordance with point 1.
+
+Ewoks maintainers reserve the right to close any PR that infringes on the policy.
