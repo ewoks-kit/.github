@@ -91,6 +91,7 @@ jobs:
           fi
           if [ -n "${{ inputs.qt-api }}" ]; then
             echo "QT_API=${{ inputs.qt-api }}" >> "$GITHUB_ENV"
+            echo "PYTEST_QT_API=${{ inputs.qt-api }}" >> "$GITHUB_ENV"
           fi
           if [ -n "${{ inputs.display }}" ]; then
             echo "DISPLAY=${{ inputs.display }}" >> "$GITHUB_ENV"
