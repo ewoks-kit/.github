@@ -18,7 +18,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: python -m pip install --upgrade pip build
+      # pip < 26.2.2 trusts the compromised eMudhra CA, so it is first upgraded to 26.2.2 by hash.
+      # The next command then upgrades to the latest pip as usual.
+      # pip 26.2.2 requires Python >= 3.10: older Pythons cannot get the fix.
+      # Incident: https://emudhra.we-have-a-problem.com/
+      # Recommendations: https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576
+      # Do not update PINNED_PIP_URL for new pip releases. Remove the bootstrap and
+      # PINNED_PIP_URL once setup-python installs pip >= 26.2.2.
+      - name: Upgrade pip
+        env:
+          PINNED_PIP_URL: "https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+        run: |
+          python -c "import os, subprocess, sys; from pip import __version__; from pip._vendor.packaging.version import Version; sys.version_info >= (3, 10) and Version(__version__) < Version('26.2.2') and subprocess.check_call([sys.executable, '-m', 'pip', 'install', os.environ['PINNED_PIP_URL']])"
+          python -m pip install --upgrade pip build
       - run: python -m build
 
       - uses: actions/upload-artifact@v7
