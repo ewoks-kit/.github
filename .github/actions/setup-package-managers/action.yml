@@ -42,10 +42,11 @@ runs:
         set -e
         if [ "$RUNNER_OS" == "Windows" ]; then
           powershell -ExecutionPolicy ByPass -c "irm -useb https://pixi.sh/install.ps1 | iex"
+          echo "$USERPROFILE\\.pixi\\bin" >> "$GITHUB_PATH"
         else
           curl -fsSL https://pixi.sh/install.sh | bash
+          echo "$HOME/.pixi/bin" >> "$GITHUB_PATH"
         fi
-        echo "$HOME/.pixi/bin" >> "$GITHUB_PATH"
 
     - name: Enable conda
       if: contains(inputs.package-managers, 'conda')
