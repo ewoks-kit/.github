@@ -98,8 +98,8 @@ rm -rf doc/_generated/; sphinx-build doc build/sphinx/html -E -a
    - Deploy through CI jobs (recommended)
 
       Once the tests have passed on `main`, CI jobs for deployment on [pypi](https://pypi.org) and [testpypi](https://test.pypi.org)
-      will be available in the CI pipeline page. Launching these jobs manually will trigger the deployment on the corresponding
-      python package index. In case of the `pypi` job a git tag for the version will be added to the repository.
+      will be available in the Actions page (https://github.com/ewoks-kit/<project_name>/actions/workflows/release.yml). Running this workflow will trigger the deployment on the corresponding
+      Python package index. In case of the `pypi` job, a git tag for the version will be added to the repository.
 
    - Deploy manually from the terminal with `build` and `twine`
 
